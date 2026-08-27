@@ -1,10 +1,10 @@
 /**
- * lesson router
+ * quiz router
  */
 
 import { factories } from '@strapi/strapi';
 
-export default factories.createCoreRouter('api::lesson.lesson', {
+export default factories.createCoreRouter('api::quiz.quiz', {
   config: {
     create: {
       policies: ['global::is-course-owner'],

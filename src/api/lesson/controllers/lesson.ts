@@ -1,6 +1,3 @@
-/**
- * lesson controller
- */
 
 import { factories } from '@strapi/strapi';
 

@@ -1,6 +1,4 @@
-/**
- * blog-post router
- */
+
 
 import { factories } from '@strapi/strapi';
 

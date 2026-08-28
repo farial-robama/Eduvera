@@ -1,6 +1,4 @@
-/**
- * course service
- */
+
 
 import { factories } from '@strapi/strapi';
 

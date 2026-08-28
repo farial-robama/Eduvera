@@ -1,6 +1,3 @@
-/**
- * quiz-result controller
- */
 
 import { factories } from '@strapi/strapi';
 

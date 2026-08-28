@@ -1,6 +1,3 @@
-/**
- * lesson service
- */
 
 import { factories } from '@strapi/strapi';
 

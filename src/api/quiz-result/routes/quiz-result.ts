@@ -1,6 +1,3 @@
-/**
- * quiz-result router
- */
 
 import { factories } from '@strapi/strapi';
 

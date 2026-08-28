@@ -159,7 +159,9 @@
 
 
 
-export default async (policyContext, config, { strapi }) => {
+import type { Core } from '@strapi/strapi';
+
+export default async (policyContext: any, config: any, { strapi }: { strapi: Core.Strapi }) => {
   const { user } = policyContext.state;
   if (!user) {
     strapi.log.info('[is-course-owner] BLOCKED: no user on request');
@@ -176,10 +178,10 @@ export default async (policyContext, config, { strapi }) => {
   }
 
   const ctx = policyContext;
-  const idParam = ctx.params?.id; // in Strapi v5 this is the documentId string, NOT the numeric id
+  const idParam = ctx.params?.id;
   strapi.log.info(`[is-course-owner] idParam=${idParam} url=${ctx.request.url}`);
 
-  let course = null;
+  let course: any = null;
   if (idParam && ctx.request.url.includes('/courses')) {
     course = await strapi.documents('api::course.course').findOne({
       documentId: idParam,

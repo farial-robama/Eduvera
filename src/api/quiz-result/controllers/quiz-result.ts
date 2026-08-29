@@ -16,14 +16,48 @@ export default factories.createCoreController(
         return ctx.badRequest('Quiz is required');
       }
 
-      const result = await strapi.documents('api::quiz-result.quiz-result').create({
-        data: {
-          ...data,
-          student: user.id,
-        },
-      });
+      const result = await strapi
+        .documents('api::quiz-result.quiz-result')
+        .create({
+          data: {
+            ...data,
+            student: user.id,
+          },
+        });
 
       return { data: result };
+    },
+
+    async find(ctx) {
+      const user = ctx.state.user;
+
+      if (!user) {
+        return ctx.unauthorized('You must be logged in');
+      }
+
+      const results = await strapi
+        .documents('api::quiz-result.quiz-result')
+        .findMany({
+          filters: {
+            student: {
+              id: {
+                $eq: user.id,
+              },
+            },
+          },
+        });
+
+      return {
+        data: results,
+        meta: {
+          pagination: {
+            page: 1,
+            pageSize: results.length,
+            pageCount: results.length > 0 ? 1 : 0,
+            total: results.length,
+          },
+        },
+      };
     },
   })
 );

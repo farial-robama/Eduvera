@@ -3,6 +3,7 @@ import { factories } from '@strapi/strapi';
 export default factories.createCoreController(
   'api::quiz-result.quiz-result',
   ({ strapi }) => ({
+    // Create Quiz Result
     async create(ctx) {
       const user = ctx.state.user;
 
@@ -28,6 +29,7 @@ export default factories.createCoreController(
       return { data: result };
     },
 
+    // Get current student's Quiz Results
     async find(ctx) {
       const user = ctx.state.user;
 
@@ -57,6 +59,38 @@ export default factories.createCoreController(
             total: results.length,
           },
         },
+      };
+    },
+
+    // Get one Quiz Result belonging to current student
+    async findOne(ctx) {
+      const user = ctx.state.user;
+
+      if (!user) {
+        return ctx.unauthorized('You must be logged in');
+      }
+
+      const results = await strapi
+        .documents('api::quiz-result.quiz-result')
+        .findMany({
+          filters: {
+            documentId: {
+              $eq: ctx.params.documentId,
+            },
+            student: {
+              id: {
+                $eq: user.id,
+              },
+            },
+          },
+        });
+
+      if (!results.length) {
+        return ctx.notFound('Quiz result not found');
+      }
+
+      return {
+        data: results[0],
       };
     },
   })

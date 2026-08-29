@@ -1,24 +1,24 @@
-import { factories } from '@strapi/strapi';
+import { factories } from "@strapi/strapi";
 
 export default factories.createCoreController(
-  'api::quiz-result.quiz-result',
+  "api::quiz-result.quiz-result",
   ({ strapi }) => ({
-    // Create Quiz Result
+   
     async create(ctx) {
       const user = ctx.state.user;
 
       if (!user) {
-        return ctx.unauthorized('You must be logged in');
+        return ctx.unauthorized("You must be logged in");
       }
 
       const { data } = ctx.request.body;
 
       if (!data?.quiz) {
-        return ctx.badRequest('Quiz is required');
+        return ctx.badRequest("Quiz is required");
       }
 
       const result = await strapi
-        .documents('api::quiz-result.quiz-result')
+        .documents("api::quiz-result.quiz-result")
         .create({
           data: {
             ...data,
@@ -29,16 +29,16 @@ export default factories.createCoreController(
       return { data: result };
     },
 
-    // Get current student's Quiz Results
+    
     async find(ctx) {
       const user = ctx.state.user;
 
       if (!user) {
-        return ctx.unauthorized('You must be logged in');
+        return ctx.unauthorized("You must be logged in");
       }
 
       const results = await strapi
-        .documents('api::quiz-result.quiz-result')
+        .documents("api::quiz-result.quiz-result")
         .findMany({
           filters: {
             student: {
@@ -62,36 +62,34 @@ export default factories.createCoreController(
       };
     },
 
-    // Get one Quiz Result belonging to current student
+    
     async findOne(ctx) {
       const user = ctx.state.user;
 
       if (!user) {
-        return ctx.unauthorized('You must be logged in');
+        return ctx.unauthorized("You must be logged in");
       }
 
-      const results = await strapi
-        .documents('api::quiz-result.quiz-result')
-        .findMany({
-          filters: {
-            documentId: {
-              $eq: ctx.params.documentId,
-            },
-            student: {
-              id: {
-                $eq: user.id,
-              },
-            },
+      const result = await strapi
+        .documents("api::quiz-result.quiz-result")
+        .findOne({
+          documentId: ctx.params.documentId,
+          populate: {
+            student: true,
           },
         });
 
-      if (!results.length) {
-        return ctx.notFound('Quiz result not found');
+      if (!result) {
+        return ctx.notFound("Quiz result not found");
+      }
+
+      if (String(result.student?.id) !== String(user.id)) {
+        return ctx.forbidden("You can only access your own quiz result");
       }
 
       return {
-        data: results[0],
+        data: result,
       };
     },
-  })
+  }),
 );

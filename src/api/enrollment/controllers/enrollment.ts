@@ -8,12 +8,20 @@ export default factories.createCoreController('api::enrollment.enrollment', ({ s
       return ctx.unauthorized('You must be logged in to enroll.');
     }
 
-    ctx.request.body.data = {
-      ...ctx.request.body.data,
-      student: user.id,
-    };
+    const { course, enrolledAt } = ctx.request.body.data || {};
 
-    const response = await super.create(ctx);
-    return response;
+    if (!course) {
+      return ctx.badRequest('course is required');
+    }
+
+    const entry = await strapi.documents('api::enrollment.enrollment').create({
+      data: {
+        student: user.id,
+        course,
+        enrolledAt: enrolledAt || new Date().toISOString(),
+      },
+    });
+
+    return { data: entry };
   },
 }));
